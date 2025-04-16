@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import plus from "./plus.svg";
 import smile from "./smile.svg";
+import { useSpring, animated } from "@react-spring/web";
 
 interface Props {
   users: string[];
@@ -82,18 +83,32 @@ const Message: React.FC<Props & { message: string[]; className?: string }> = ({
 }) => {
   return (
     <div className={props.className}>
-      {message.map((chunk, i) =>
-        chunk.startsWith("@") &&
-        props.users.some((user) => `@${user}` === chunk) ? (
-          <span key={i} className="text-blue-400 whitespace-pre-wrap">
-            {chunk}
-          </span>
-        ) : (
+      {message.map((chunk, i) => {
+        if (chunk.startsWith("data:image")) {
+          return (
+            <div className="py-2">
+              <img className="rounded-lg" key={i} src={chunk} alt="message" />
+            </div>
+          );
+        }
+
+        if (
+          chunk.startsWith("@") &&
+          props.users.some((user) => `@${user}` === chunk)
+        ) {
+          return (
+            <span key={i} className="text-blue-400 whitespace-pre-wrap">
+              {chunk}
+            </span>
+          );
+        }
+
+        return (
           <span key={i} className="whitespace-pre-wrap">
             {chunk}
           </span>
-        )
-      )}
+        );
+      })}
     </div>
   );
 };
@@ -103,6 +118,12 @@ export const Component: React.FC<Props> = (props) => {
   const currentChunkIndex = getChunkIndex(props, props.startIndex);
   const currentChunk = props.input[currentChunkIndex];
   const isMention = currentChunk.startsWith("@");
+
+  const springs = useSpring({
+    from: { height: 0 },
+    to: { height: props.isFocused ? 4 : 0 },
+    config: { tension: 280, friction: 60 },
+  });
 
   useEffect(() => {
     if (ref.current) {
@@ -122,14 +143,14 @@ export const Component: React.FC<Props> = (props) => {
       ))}
       <div className="relative">
         <ul
-          className={`absolute bottom-full border border-slate-300 bg-white rounded-lg overflow-hidden mb-1`}
+          className={`absolute -left-2 bottom-[calc(100%+-8px)] border border-slate-300 bg-white rounded-lg overflow-hidden shadow`}
         >
           {isMention
             ? getMentionUsers(props, currentChunk).map((user, i) => (
                 <li
                   key={i}
-                  className={`px-4 py-2 cursor-pointer w-72  ${
-                    props.mentionIndex === i ? "bg-blue-100" : ""
+                  className={`px-2 py-1 cursor-pointer w-72 text-sm ${
+                    props.mentionIndex === i ? "bg-blue-500 text-white" : ""
                   }`}
                   onMouseEnter={() => {
                     props.setMentionIndex(i);
@@ -256,16 +277,41 @@ export const Component: React.FC<Props> = (props) => {
               <Message {...props} message={props.input} />
             </div>
           </div>
-          {props.isFocused ? (
-            <div className="flex  gap-1 p-4">
-              <button className="w-8 p-1 border-slate-300 border rounded-xl cursor-pointer">
-                <img src={plus} alt="smile" />
-              </button>
+          <animated.div
+            className={"overflow-hidden"}
+            style={{
+              height: springs.height.to((h) => `${h}rem`),
+            }}
+          >
+            <div className="flex gap-2 p-4">
+              <div
+                className="w-8 p-1 border-slate-300 border rounded-xl  relative"
+                onClick={() => {}}
+              >
+                <img src={plus} alt="smile" className="cursor-pointer" />
+                <input
+                  accept="image/*"
+                  type="file"
+                  className="absolute top-0 left-0 w-full h-full opacity-0 hover:cursor-pointer"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = (e) => {
+                        const dataUrl = e.target?.result as string;
+                        console.log(dataUrl);
+                        props.setMessages([...props.messages, [dataUrl]]);
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                />
+              </div>
               <button className="w-8 p-1 border-slate-300 border rounded-xl cursor-pointer">
                 <img src={smile} alt="smile" />
               </button>
               <button
-                className="ml-auto bg-black text-white rounded-lg px-2 py-0 text-xs cursor-pointer"
+                className="ml-auto bg-black text-white rounded-lg px-2 py-0 text-xs pointer"
                 onClick={() => {
                   props.setMessages([...props.messages, props.input]);
                   props.setInput([""]);
@@ -274,7 +320,7 @@ export const Component: React.FC<Props> = (props) => {
                 Send
               </button>
             </div>
-          ) : null}
+          </animated.div>
         </div>
       </div>
     </div>

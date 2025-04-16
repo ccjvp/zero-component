@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Component } from "./Component";
 
 interface State {
@@ -56,7 +56,7 @@ function App() {
   });
 
   return (
-    <div className="h-screen w-screen flex flex-col items-center justify-end  bg-slate-50 p-16">
+    <div className="h-screen w-screen flex flex-col items-center justify-end bg-slate-50 p-16">
       <Component {...state} />
     </div>
   );
