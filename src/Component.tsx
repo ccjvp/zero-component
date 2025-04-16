@@ -132,7 +132,7 @@ export const Component: React.FC<Props> = (props) => {
   }, [props.startIndex]);
 
   return (
-    <div className="flex flex-col items-start">
+    <div className="flex flex-col items-start w-full">
       {props.messages.map((message, i) => (
         <Message
           className="bg-slate-200 px-4 py-2 rounded-xl mb-4 max-w-prose"
@@ -141,9 +141,9 @@ export const Component: React.FC<Props> = (props) => {
           key={i}
         />
       ))}
-      <div className="relative">
+      <div className="relative w-full">
         <ul
-          className={`absolute -left-2 bottom-[calc(100%+-8px)] border border-slate-300 bg-white rounded-lg overflow-hidden shadow`}
+          className={`absolute -left-2 bottom-[calc(100%+-.5rem)] border border-slate-300 bg-white rounded-lg overflow-hidden shadow`}
         >
           {isMention
             ? getMentionUsers(props, currentChunk).map((user, i) => (
@@ -241,7 +241,7 @@ export const Component: React.FC<Props> = (props) => {
               placeholder="Write something..."
               className={`${
                 !props.isFocused ? "border" : ""
-              } input rounded-xl p-4 border-slate-300 w-192 focus:outline-0`}
+              } input rounded-xl p-4 border-slate-300 w-full focus:outline-0`}
               onKeyDown={(event) => {
                 if (event.currentTarget.selectionStart !== null) {
                   if (isMention) {

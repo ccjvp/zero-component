@@ -56,8 +56,10 @@ function App() {
   });
 
   return (
-    <div className="h-screen w-screen flex flex-col items-center justify-end bg-slate-50 p-16">
-      <Component {...state} />
+    <div className="h-dvh w-screen flex flex-col items-center justify-end bg-slate-50 p-8 lg:p-16">
+      <div className="w-full lg:w-192">
+        <Component {...state} />
+      </div>
     </div>
   );
 }
