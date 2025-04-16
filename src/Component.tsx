@@ -311,7 +311,7 @@ export const Component: React.FC<Props> = (props) => {
                 <img src={smile} alt="smile" />
               </button>
               <button
-                className="ml-auto bg-black text-white rounded-lg px-2 py-0 text-xs pointer"
+                className="ml-auto bg-black text-white rounded-lg px-2 py-0 text-xs cursor-pointer"
                 onClick={() => {
                   props.setMessages([...props.messages, props.input]);
                   props.setInput([""]);
